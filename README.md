@@ -19,6 +19,11 @@ The purpose of this project is to explore and implement procedural terrain gener
 - C# Forensic & Scatterplot Plugin
 - GitHub for version control
 
+## Images 
+* [Perlin Noise plot](https://github.com/Ambrosius1963/Seed-Generation/blob/main/Perlin-Noise-Material-Distribution-with-different-Noise-Scale-from-2D-to-3D.png)
+* [Perlin 3D Mesh–Soft](https://github.com/Ambrosius1963/Seed-Generation/blob/main/perlin-noise-terrain-mesh1.png)
+* [Perlin 3D Mesh–Rough](https://github.com/Ambrosius1963/Seed-Generation/blob/main/perlin-noise-terrain-mesh2.png)
+
 ## Language
 - C#
 
