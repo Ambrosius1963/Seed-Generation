@@ -1,3 +1,5 @@
+https://docs.google.com/document/d/11Yhwnpen4aij5szC7UaaqTy7-bVdFcotNt1OJ8ELSfQ/edit?usp=sharing
+
 # Seed-Generation
 Game map seeds generated using Perlin noise
 # Overview
