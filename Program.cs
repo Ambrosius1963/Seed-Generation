@@ -4,10 +4,11 @@ using System.Globalization;
 class Program
 {
     static void Main()
+    static void Main()
     {
         // Generate a seed using the current date and time
-        long seed = GenerateSeed();
-        Console.WriteLine($"Generated Seed: {seed}");
+        string seed = GenerateSeed();
+        Console.WriteLine($"\nGenerated Seed (from Date): {seed}");
 
         // Example usage of decisionMaker
         int randomInt = decisionMaker<int>(seed, 100.0, 4);
@@ -19,49 +20,77 @@ class Program
         //Console.WriteLine($"Random Char: {randomChar}");
         
         // Example usage of GenerateSeedFromText
-        string inputText = "HelloWorld";
-        int seedFromWord = GenerateSeedFromText(inputText);
-        Console.WriteLine($"Generated Seed: {seedFromWord}");
-
+        string inputText = "HelloWorld"; // HelloWorld Output: 05674961687621677140788541440568
+        string seedFromWord = GenerateSeedFromText(inputText);
+        Console.WriteLine($"Generated Seed from text: {seedFromWord}"); 
+                                                                        
         string NewString = inputText.Insert(5, "T");
         Console.WriteLine(NewString); // Output: HelloTWorld
-        
-        
     }
-
-    static long GenerateSeed()
+    
+    // generate random seed from the Date and Time
+    static string GenerateSeed()
     {
-        char[] dtg = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture).ToCharArray();
-        int i = 0;
+        string dtg = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+        List<int> seedNumbers = new List<int>();
 
-        do
+        // Convert date-time to numbers and mix them randomly
+        foreach (char c in dtg)
         {
-            int cursor1 = int.Parse(dtg[0 + i].ToString());
-            Console.Out.WriteLine($"cursor1: {cursor1}");
-
-            int cursor2 = int.Parse(dtg[4 + i].ToString());
-            Console.Out.WriteLine($"cursor2: {cursor2}");
-
-            int cursor3 = (cursor1 + cursor2) % 10;
-            dtg[8 + i] = (char)('0' + cursor3);
-            Console.Out.WriteLine($"cursor3: {cursor3}");
-
-            i++; 
-        } while (i < 32); 
-        return long.Parse(new string(dtg));
-    }
-
-    static int GenerateSeedFromText(string text)
-    {
-        unchecked
-        {
-            int hash = 0;
-            foreach (char c in text)
-            {
-                hash = (hash * 31) + c; // Multiply by prime number and add char value
-            }
-            return hash & 0x7FFFFFFF; // Ensure it's a positive 32-bit integer
+            seedNumbers.Add((c - '0') * 3 % 10); // Multiply by 3 and mod 10 for initial scrambling
         }
+
+        // Expand and shuffle
+        while (seedNumbers.Count < 32)
+        {
+            for (int i = 0; i < seedNumbers.Count - 1 && seedNumbers.Count < 32; i++)
+            {
+                int newNum = (seedNumbers[i] * 7 + seedNumbers[i + 1] * 5 + i) % 10; 
+                seedNumbers.Add(newNum);
+            }
+        }
+        // Shuffle
+        seedNumbers = ShuffleList(seedNumbers);
+
+        // return string
+        return string.Join("", seedNumbers);
+    }
+
+    // Simple deterministic shuffle (ensures same seed for same input)
+    static List<int> ShuffleList(List<int> list)
+    {
+        List<int> shuffled = new List<int>(list);
+        for (int i = 0; i < shuffled.Count; i++)
+        {
+            int swapIndex = (shuffled[i] * 3 + i * 2) % shuffled.Count;
+            (shuffled[i], shuffled[swapIndex]) = (shuffled[swapIndex], shuffled[i]);
+        }
+        return shuffled;
+    }
+    // Generate random seed from text
+    static string GenerateSeedFromText(string text)
+    {
+        List<int> seedNumbers = new List<int>();
+
+        // Convert text numbers and mix
+        foreach (char c in text)
+        {
+            seedNumbers.Add((c * 7) % 10); // Multiply by 7 and mod 10 for scrambling
+        }
+        // If text is less than 32 characters, expand
+        while (seedNumbers.Count < 32)
+        {
+            for (int i = 0; i < seedNumbers.Count - 1 && seedNumbers.Count < 32; i++)
+            {
+                int newNum = (seedNumbers[i] * 5 + seedNumbers[i + 1] * 3 + i) % 10;
+                seedNumbers.Add(newNum);
+            }
+        }
+        // Shuffle
+        seedNumbers = ShuffleList(seedNumbers);
+
+        // return string
+        return string.Join("", seedNumbers);
     }
 
     static T decisionMaker<T>(long seed, double maxValue, int rangeLength)
