@@ -3,7 +3,7 @@ using System.Globalization;
 
 class Program
 {
-    static void Main()
+
     static void Main()
     {
         // Generate a seed using the current date and time
