@@ -1,4 +1,4 @@
-[LiveShare](https://prod.liveshare.vsengsaas.visualstudio.com/join?BBCD3693E2591DEE6B239AAF243D0C24A52B)
+[LiveShare](https://prod.liveshare.vsengsaas.visualstudio.com/join?1A2E1560563D1DDBE561261228F36ABDD40F)
 
 [Outline](https://docs.google.com/document/d/11Yhwnpen4aij5szC7UaaqTy7-bVdFcotNt1OJ8ELSfQ/edit?usp=sharing)
 
