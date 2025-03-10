@@ -20,7 +20,7 @@ class Program
         //Console.WriteLine($"Random Char: {randomChar}");
         
         // Example usage of GenerateSeedFromText
-        string inputText = "HelloWorld"; // HelloWorld Output: 05674961687621677140788541440568
+        string inputText = "Chicken Nuggets";
         string seedFromWord = GenerateSeedFromText(inputText);
         Console.WriteLine($"Generated Seed from text: {seedFromWord}"); 
                                                                         
@@ -32,20 +32,32 @@ class Program
     static string GenerateSeed()
     {
         string dtg = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+
+        int sfff = int.Parse(dtg.Substring(13, 4));
+
+        long seedValue = long.Parse(dtg) * sfff; 
+        // more math here! to get more random
+
+        string stringDTG = seedValue.ToString();
         List<int> seedNumbers = new List<int>();
 
-        // Convert date-time to numbers and mix them randomly
-        foreach (char c in dtg)
+        // Convert date-time to numbers and mix them deterministically
+        foreach (char c in stringDTG)
         {
-            seedNumbers.Add((c - '0') * 3 % 10); // Multiply by 3 and mod 10 for initial scrambling
+            if (char.IsDigit(c))
+            {
+                seedNumbers.Add((c - '0') * 37 % 10); // Multiply by 3 and mod 10 for initial scrambling
+            }
         }
+
+        seedNumbers.Reverse();
 
         // Expand and shuffle
         while (seedNumbers.Count < 32)
         {
             for (int i = 0; i < seedNumbers.Count - 1 && seedNumbers.Count < 32; i++)
             {
-                int newNum = (seedNumbers[i] * 7 + seedNumbers[i + 1] * 5 + i) % 10; 
+                int newNum = (seedNumbers[i] * 89 + seedNumbers[i + 1] * 97 + i * 7) % 10;
                 seedNumbers.Add(newNum);
             }
         }
@@ -67,6 +79,7 @@ class Program
         }
         return shuffled;
     }
+    
     // Generate random seed from text
     static string GenerateSeedFromText(string text)
     {
@@ -93,9 +106,9 @@ class Program
         return string.Join("", seedNumbers);
     }
 
-    static T decisionMaker<T>(long seed, double maxValue, int rangeLength)
+    static T decisionMaker<T>(string seed, double maxValue, int rangeLength)
     {
-        string seedString = seed.ToString();
+        string seedString = seed;
         int startIdx = seedString.Length - rangeLength;
         if (startIdx < 0) 
             startIdx = 0;
@@ -114,6 +127,9 @@ class Program
         return (T)result;
     }
 }
+
+
+
 
 
 // using UnityEngine;
