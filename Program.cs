@@ -3,7 +3,6 @@ using System.Globalization;
 
 class Program
 {
-
     static void Main()
     {
         // Generate a seed using the current date and time
@@ -23,6 +22,9 @@ class Program
         string inputText = "Chicken Nuggets";
         string seedFromWord = GenerateSeedFromText(inputText);
         Console.WriteLine($"Generated Seed from text: {seedFromWord}"); 
+        int randomInt2 = decisionMaker<int>(seedFromWord, 100.0, 4);
+        Console.WriteLine($"Random Int: {randomInt2}");
+        
                                                                         
         string NewString = inputText.Insert(5, "T");
         Console.WriteLine(NewString); // Output: HelloTWorld
