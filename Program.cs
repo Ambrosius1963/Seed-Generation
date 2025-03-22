@@ -26,9 +26,9 @@ class Program
         PerlinNoise dateToNoiseGenerator = new PerlinNoise(int.Parse(seed.Substring(0, Math.Min(9, seed.Length))));
 
         // Generate and display a small 2D Perlin noise map
-        int dateWidth = 40;
-        int dateHeight = 20;
-        GenerateAndDisplayPerlinNoise(dateToNoiseGenerator, dateWidth, dateHeight, 0.08f);
+        int width = 80;
+        int height = 40;
+        GenerateAndDisplayPerlinNoise(dateToNoiseGenerator, width, height, 0.08f); // try 0.15f for more detail, and 0.05f for less
 
         // Example usage of GenerateSeedFromText
         Console.Write("Please enter a seed: ");
@@ -55,9 +55,9 @@ class Program
         PerlinNoise noiseGenerator = new PerlinNoise(int.Parse(seedFromWord.Substring(0, Math.Min(9, seedFromWord.Length))));
         
         // Generate and display a small 2D Perlin noise map
-        int width = 40;
-        int height = 20;
-        GenerateAndDisplayPerlinNoise(noiseGenerator, width, height, 0.08f);
+        // int width = 40;
+        // int height = 20;
+        GenerateAndDisplayPerlinNoise(noiseGenerator, width, height, 0.08f); // try 0.15f for more detail, and 0.05f for less
     }
     
     // Generate and display a 2D Perlin noise map using ASCII characters
