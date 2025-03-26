@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using SkiaSharp;
+// using System.Drawing;
+// using System.Drawing.Imaging;
+// using System.Runtime.InteropServices;
 
 class Program
 {
@@ -33,12 +37,12 @@ class Program
         // Generate and display a small 2D Perlin noise map
         GenerateAndDisplayPerlinNoise(dateToNoiseGenerator, width, height, noiseScale);
 
-        
+
         // Example usage of GenerateSeedFromText
         Console.Write("Please enter a seed: ");
         string inputText = Console.ReadLine();
 
-        string seedFromWord = GenerateSeedFromText(inputText);
+        string seedFromWord = GenerateSeedFromText(inputText); // Lots of '%' in 1234567890)(*&^%$#@! AND spaces in 10293847565647382910
         Console.WriteLine($"Text: {inputText}");
         Console.WriteLine($"Generated Seed from text: {seedFromWord}"); 
 
@@ -58,17 +62,133 @@ class Program
         // Create a Perlin noise generator using the seed from text
         PerlinNoise noiseGenerator = new PerlinNoise(int.Parse(seedFromWord.Substring(0, Math.Min(9, seedFromWord.Length))));
         
+        // creates a random scale for the perlin noise picture based on the zValueWord
+        float perlinPictureScale = 0.004f + (zValueWord / 99f) * (0.020f - 0.004f); // around 0.005f; 
+
         // Generate and display a small 2D Perlin noise map
-        // int width = 40;
-        // int height = 20;
-        GenerateAndDisplayPerlinNoise(noiseGenerator, width, height, noiseScale); // try 0.15f for more detail, and 0.05f for less
-    }
+        GenerateAndDisplayPerlinNoise(noiseGenerator, width, height, perlinPictureScale * 12.5f);
+
+
+        // Generate and save a Perlin noise picture bitmap from WORD input
+        GeneratePerlinNoiseBitmap(noiseGenerator, 800, 800, perlinPictureScale, "perlin_noise.png");
+
+        Console.WriteLine("Perlin noise picture scale: " + perlinPictureScale);
+        Console.WriteLine("Perlin noise bitmap has been generated and saved as 'perlin_noise.png'\n");
     
+    }
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Noise picture generator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// // Generate a Perlin noise bitmap for WINDOWS
+//     static void GeneratePerlinNoiseBitmap(PerlinNoise noiseGenerator, int width, int height, float scale, string filename)
+//     {
+//         // Create a new bitmap
+//         using (Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb))
+//         {
+//             // Lock the bitmap's bits
+//             BitmapData bmpData = bitmap.LockBits(
+//                 new Rectangle(0, 0, width, height), 
+//                 ImageLockMode.WriteOnly, 
+//                 bitmap.PixelFormat
+//             );
+
+//             // Create an array to hold the pixel data
+//             int bytesPerPixel = 3; // 24bpp = 3 bytes per pixel (RGB)
+//             int byteCount = bmpData.Stride * height;
+//             byte[] rgbValues = new byte[byteCount];
+
+//             // Generate noise and convert to grayscale
+//             for (int y = 0; y < height; y++)
+//             {
+//                 for (int x = 0; x < width; x++)
+//                 {
+//                     // Generate noise value
+//                     float noiseValue = noiseGenerator.Noise(x * scale, y * scale);
+                    
+//                     // Map noise from [-1, 1] to [0, 255]
+//                     byte grayValue = (byte)((noiseValue + 1) * 127.5);
+                    
+//                     // Calculate the index in the byte array
+//                     int index = y * bmpData.Stride + x * bytesPerPixel;
+                    
+//                     // Set RGB values to create grayscale
+//                     rgbValues[index] = grayValue;         // Blue
+//                     rgbValues[index + 1] = grayValue;     // Green
+//                     rgbValues[index + 2] = grayValue;     // Red
+//                 }
+//             }
+
+//             // Copy the RGB values back to the bitmap
+//             Marshal.Copy(rgbValues, 0, bmpData.Scan0, byteCount);
+            
+//             // Unlock the bits
+//             bitmap.UnlockBits(bmpData);
+
+//             // Save the bitmap
+//             bitmap.Save(filename, ImageFormat.Png);
+//         }
+//     }
+
+// Generate a Perlin noise bitmap using SkiaSharp for MACBOOK
+    static void GeneratePerlinNoiseBitmap(PerlinNoise noiseGenerator, int width, int height, float scale, string filename)
+    {
+        // Create a new SKBitmap
+        using (SKBitmap bitmap = new SKBitmap(width, height))
+        {
+            // Create a canvas to draw on the bitmap
+            using (SKCanvas canvas = new SKCanvas(bitmap))
+            {
+                // Fill the canvas with a white background
+                canvas.Clear(SKColors.White);
+
+                // Create a paint for drawing pixels
+                using (SKPaint paint = new SKPaint())
+                {
+                    // Generate noise and draw pixels
+                    for (int y = 0; y < height; y++)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            // Generate noise value
+                            float noiseValue = noiseGenerator.Noise(x * scale, y * scale);
+                            
+                            // Map noise from [-1, 1] to [0, 255]
+                            byte grayValue = (byte)((noiseValue + 1) * 127.5);
+                            
+                            // Create a color with the grayscale value
+                            paint.Color = new SKColor(grayValue, grayValue, grayValue);
+                            
+                            // Draw a single pixel
+                            canvas.DrawPoint(x, y, paint);
+                        }
+                    }
+                }
+            }
+
+            // Save the bitmap to a file
+            using (var image = SKImage.FromBitmap(bitmap))
+            using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+            {
+                // Save to file
+                using (var stream = System.IO.File.OpenWrite(filename))
+                {
+                    data.SaveTo(stream);
+                }
+            }
+        }
+    }
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     // Generate and display a 2D Perlin noise map using ASCII characters
     static void GenerateAndDisplayPerlinNoise(PerlinNoise noiseGenerator, int width, int height, float scale)
     {
         // Characters from dark to light for ASCII representation
         char[] asciiChars = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
+
+        // reverse the array to get light to dark
+        // char[] asciiChars = { '@', '%', '#', '*', '+', '=', '-', ':', '.', ' ' };
         // char[] asciiChars = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
         
         Console.WriteLine($"Perlin Noise Map ({width}x{height}):");
@@ -287,7 +407,6 @@ class PerlinNoise
 }
 
 
-// v~~~~~~~~~~~~~~~~~~~~~~~~v Previous code Without Perlin noise representations v~~~~~~~~~~~~~~~~~~~~~~~~v 
 
 // using System;
 // using System.Globalization;
