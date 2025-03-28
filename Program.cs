@@ -185,11 +185,14 @@ class Program
     static void GenerateAndDisplayPerlinNoise(PerlinNoise noiseGenerator, int width, int height, float scale)
     {
         // Characters from dark to light for ASCII representation
-        char[] asciiChars = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
-
+        // very beautiful flow of characters 
+        char[] asciiChars = { ' ', '_', '.', ':', '=', '*', '%', '@', '#', '^' }; //good test seed: 10293847565647382910
+        
+        // original character order 
+        //char[] asciiChars = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
         // reverse the array to get light to dark
         // char[] asciiChars = { '@', '%', '#', '*', '+', '=', '-', ':', '.', ' ' };
-        // char[] asciiChars = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        // char[] asciiChars = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }; // Numbers for fun
         
         Console.WriteLine($"Perlin Noise Map ({width}x{height}):");
         
