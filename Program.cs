@@ -24,6 +24,13 @@ class Program
 {
     static void Main()
     {
+        Console.Clear();
+        Console.WriteLine("\nWelcome to");
+        Console.WriteLine("\n\t【T】【E】【R】【R】【A】【N】【O】【I】【S】【E】\n");
+        Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        Console.WriteLine("Press enter to generate a seed from the current date and time.");
+        Console.ReadLine();
+
         // Generate a seed using the current date and time
         string seed = GenerateSeed();
         Console.WriteLine($"\n\nGenerated Seed (from Date): {seed}");
@@ -33,26 +40,30 @@ class Program
         // Access the three numbers individually
         int xValueDate = randomInts[0];
         int yValueDate = randomInts[1];
-        int ZValueDate = randomInts[2];
+        int zValueDate = randomInts[2];
 
-        Console.WriteLine("\n~Random Ints from Date~");
+        Console.WriteLine("\n~Random Ints~");
         Console.WriteLine($"x: {xValueDate}");
         Console.WriteLine($"y: {yValueDate}");
-        Console.WriteLine($"z: {ZValueDate}\n");
+        Console.WriteLine($"z: {zValueDate}\n");
         
         // Transfer the seed to the Perlin noise generator
         PerlinNoise dateToNoiseGenerator = new PerlinNoise(int.Parse(seed.Substring(0, Math.Min(9, seed.Length))));
 
         // Set parameters for Perlin noise generation
-        float noiseScale = 0.08f; // 0.15f for more detail and 0.05f for less detail
+        // float noiseScale = 0.08f; // 0.15f for more detail and 0.05f for less detail
+        float perlinPictureScaleDate = 0.004f + (zValueDate / 99f) * (0.020f - 0.004f); // around 0.005f; 
         int width = 80;
         int height = 40;
 
         // Generate and display a small 2D Perlin noise map
-        GenerateAndDisplayPerlinNoise(dateToNoiseGenerator, width, height, noiseScale);
+        GenerateAndDisplayPerlinNoise(dateToNoiseGenerator, width, height, perlinPictureScaleDate * 8f); // 8f gives good scale
+        Console.WriteLine("Perlin noise picture scale: " + perlinPictureScaleDate * 8f);
+        // Generate and save a Perlin noise picture bitmap
+        // GeneratePerlinNoiseBitmap(dateToNoiseGenerator, 800, 800, perlinPictureScaleDate, "perlinNoiseDate.png");
 
-
-        // Example usage of GenerateSeedFromText
+//~~~~~~~~~~~~~~~~~~~~~~ GenerateSeedFromText ~~~~~~~~~~~~~~~~~~~~~~~
+        Console.WriteLine("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         Console.Write("Please enter a seed: ");
         string inputText = Console.ReadLine();
         // inputText and the perlin file name
@@ -72,10 +83,7 @@ class Program
         Console.WriteLine($"y: {yValueWord}");
         Console.WriteLine($"z: {zValueWord}\n");
         
-        // Generate and display Perlin noise
-        Console.WriteLine("\n~2D Perlin Noise from text~");
-        
-        // Create a Perlin noise generator using the seed from text
+        // Generate and display Perlin noise using the seed from text
         PerlinNoise noiseGenerator = new PerlinNoise(int.Parse(seedFromWord.Substring(0, Math.Min(9, seedFromWord.Length))));
         
         // creates a random scale for the perlin noise picture based on the zValueWord
@@ -83,13 +91,13 @@ class Program
 
         // Generate and display a small 2D Perlin noise map
         GenerateAndDisplayPerlinNoise(noiseGenerator, width, height, perlinPictureScale * 12.5f);
+        Console.WriteLine("Perlin noise picture scale: " + perlinPictureScale * 12.5f);
 
 
         // Generate and save a Perlin noise picture bitmap from WORD input
         GeneratePerlinNoiseBitmap(noiseGenerator, 800, 800, perlinPictureScale, fileName);
 
-        Console.WriteLine("Perlin noise picture scale: " + perlinPictureScale);
-        Console.WriteLine("Perlin noise bitmap has been generated and saved as " + fileName + ".\n");
+        Console.WriteLine("Perlin noise bitmap has been generated and saved as " + fileName + "\n");
     
     }
 
