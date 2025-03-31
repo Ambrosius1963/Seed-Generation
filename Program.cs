@@ -1,10 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using SkiaSharp;
+using SkiaSharp; // Mac OS
+// // Windows
 // using System.Drawing;
 // using System.Drawing.Imaging;
 // using System.Runtime.InteropServices;
+
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~
+// Questions to consider:
+// What is the purpose of this code?
+// What are the key components of the code?
+// problem to solve?
+// Solutions we came up with?
+// Problems we had to overcome?
+// takeaways?
+//
+//~~~~~~~~~~~~~~~~~~~~~~~
 
 class Program
 {
@@ -41,6 +55,8 @@ class Program
         // Example usage of GenerateSeedFromText
         Console.Write("Please enter a seed: ");
         string inputText = Console.ReadLine();
+        // inputText and the perlin file name
+        string fileName = inputText + "_perlinNoise.png";
 
         string seedFromWord = GenerateSeedFromText(inputText); // Lots of '%' in 1234567890)(*&^%$#@! AND spaces in 10293847565647382910
         Console.WriteLine($"Text: {inputText}");
@@ -70,16 +86,19 @@ class Program
 
 
         // Generate and save a Perlin noise picture bitmap from WORD input
-        GeneratePerlinNoiseBitmap(noiseGenerator, 800, 800, perlinPictureScale, "perlin_noise.png");
+        GeneratePerlinNoiseBitmap(noiseGenerator, 800, 800, perlinPictureScale, fileName);
 
         Console.WriteLine("Perlin noise picture scale: " + perlinPictureScale);
-        Console.WriteLine("Perlin noise bitmap has been generated and saved as 'perlin_noise.png'\n");
+        Console.WriteLine("Perlin noise bitmap has been generated and saved as " + fileName + ".\n");
     
     }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Noise picture generator ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // // Generate a Perlin noise bitmap for WINDOWS
+// // Must download System.Drawing.Common NuGet package
+// // You will have to dig to find the dll file unless you set a specific path
+
 //     static void GeneratePerlinNoiseBitmap(PerlinNoise noiseGenerator, int width, int height, float scale, string filename)
 //     {
 //         // Create a new bitmap
@@ -154,9 +173,16 @@ class Program
                             
                             // Map noise from [-1, 1] to [0, 255]
                             byte grayValue = (byte)((noiseValue + 1) * 127.5);
+                            byte alphaValue = 255; // opacity value
+                            byte blueValue = 255; // blue value
+                            byte greenValue = 255; // green value
+                            byte redValue = 255; // red value
+
                             
                             // Create a color with the grayscale value
-                            paint.Color = new SKColor(grayValue, grayValue, grayValue);
+                            // values are (R, G, B, A)
+                            paint.Color = new SKColor(grayValue, grayValue, grayValue,alphaValue);
+                            // paint.Color = new SKColor(redValue, greenValue, blueValue, alphaValue);
                             
                             // Draw a single pixel
                             canvas.DrawPoint(x, y, paint);
@@ -185,14 +211,11 @@ class Program
     static void GenerateAndDisplayPerlinNoise(PerlinNoise noiseGenerator, int width, int height, float scale)
     {
         // Characters from dark to light for ASCII representation
-        // very beautiful flow of characters 
-        char[] asciiChars = { ' ', '_', '.', ':', '=', '*', '%', '@', '#', '^' }; //good test seed: 10293847565647382910
-        
-        // original character order 
-        //char[] asciiChars = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
+        char[] asciiChars = { ' ', '_', '.', ':', '=', '*', '%', '#', '@', '^' }; //good test seeds: 10293847565647382910 and 1234567890)(*&^%$#@!
+
         // reverse the array to get light to dark
         // char[] asciiChars = { '@', '%', '#', '*', '+', '=', '-', ':', '.', ' ' };
-        // char[] asciiChars = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' }; // Numbers for fun
+        // char[] asciiChars = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
         
         Console.WriteLine($"Perlin Noise Map ({width}x{height}):");
         
